@@ -5,6 +5,9 @@ const (
 	Time   = 39
 	Order  = 8
 	NodeID = 63 - Time - Order // 16-bit
+
+	daffodilTimeUnit = 1e7 // == 10 msec
+
 )
 
 // Daffodil is an id generator
