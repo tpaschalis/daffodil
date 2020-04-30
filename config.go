@@ -1,7 +1,9 @@
 package daffodil
 
 import (
+	"errors"
 	"hash/fnv"
+	"os"
 	"time"
 )
 
@@ -27,4 +29,22 @@ func hashTo16Bits(s string) uint16 {
 	h.Write([]byte(s))
 
 	return uint16(h.Sum32() >> 16)
+}
+
+func getIDfromHostname() (uint16, error) {
+	host, err := os.Hostname()
+	if err != nil {
+		return 0, err
+	}
+
+	return hashTo16Bits(host), nil
+}
+
+func getIDfromEnv(s string) (uint16, error) {
+	val := os.Getenv(s)
+	if val == "" {
+		return 0, errors.New("Provided environment variable is empty")
+	}
+
+	return hashTo16Bits(val), nil
 }
