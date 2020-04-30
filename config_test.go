@@ -20,7 +20,7 @@ func TestNewConfig(t *testing.T) {
 func TestHashString(t *testing.T) {
 	s := "foo"
 	got := hashTo16Bits(s)
-	want := "sfas"
+	want := uint16(43507)
 
 	assert.IsTypef(t, got, uint16(0), "Hash should be a 16-bit integer")
 	assert.Equalf(t, want, got, "Hashed string should return %v, instead got %v", got, want)
