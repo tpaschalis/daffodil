@@ -18,9 +18,9 @@ func TestNewConfig(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestHashString(t *testing.T) {
+func TestStringTo16Bits(t *testing.T) {
 	s := "foo"
-	got := hashTo16Bits(s)
+	got := stringTo16Bits(s)
 	want := uint16(43507)
 
 	assert.IsTypef(t, uint16(0), got, "Hash should be a 16-bit integer")
