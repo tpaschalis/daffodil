@@ -23,9 +23,9 @@ func NewConfig() (*Config, error) {
 }
 
 // This is not a cryptographically secure hash; it's simply used
-// to get a numeric 16-bit representation of a string, be it a
-// hostname, an environment variable or a user-provided ID.
-func hashTo16Bits(s string) uint16 {
+// to get a numeric 16-bit 'representation' of a string,
+// which could be a hostname, an environment variable or a user-provided ID.
+func stringTo16Bits(s string) uint16 {
 	h := fnv.New32a()
 	h.Write([]byte(s))
 
@@ -46,7 +46,7 @@ func nodeIDfromHostname() (uint16, error) {
 		return 0, err
 	}
 
-	return hashTo16Bits(host), nil
+	return stringTo16Bits(host), nil
 }
 
 func nodeIDfromEnv(s string) (uint16, error) {
@@ -55,5 +55,23 @@ func nodeIDfromEnv(s string) (uint16, error) {
 		return 0, errors.New("Provided environment variable is empty")
 	}
 
-	return hashTo16Bits(val), nil
+	return stringTo16Bits(val), nil
+}
+
+func nodeIDfromIP() (uint16, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return 0, errors.New("Failed to list network interfaces")
+	}
+
+	// Loop through the available network interfaces, and find the first non-loobpack.
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipTo16Bits(ipnet.IP), nil
+			}
+		}
+	}
+
+	return 0, errors.New("Failed to locate a valid IP address")
 }
