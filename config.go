@@ -3,6 +3,7 @@ package daffodil
 import (
 	"errors"
 	"hash/fnv"
+	"net"
 	"os"
 	"time"
 )
@@ -29,6 +30,14 @@ func hashTo16Bits(s string) uint16 {
 	h.Write([]byte(s))
 
 	return uint16(h.Sum32() >> 16)
+}
+
+// IPv4 is a 32-bit address, while IPv6 is a 64-bit address
+// We obtain the final two octets of the input to provide
+// a 16-bit identifier from an IP.
+// IPs in the net package are stored as a byte slice of len 16
+func ipTo16Bits(ip net.IP) uint16 {
+	return uint16(ip[14])<<8 + uint16(ip[15])
 }
 
 func nodeIDfromHostname() (uint16, error) {

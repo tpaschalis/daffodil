@@ -28,9 +28,11 @@ func TestHashString(t *testing.T) {
 }
 
 func TestIPTo16Bits(t *testing.T) {
+	// The final two octets are '1' and '42'.
+	// We expect the result to be 1 * 2^8 + 42 = 298
 	ip := net.ParseIP("10.0.1.42")
 	got := ipTo16Bits(ip)
-	want := "foo"
+	want := uint16(298)
 
 	assert.IsTypef(t, uint16(0), got, "Result should be a 16-bit integer")
 	assert.Equalf(t, want, got, "Transformed IP should return %v, instead got %v", want, got)
