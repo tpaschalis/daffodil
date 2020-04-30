@@ -1,6 +1,8 @@
 package daffodil
 
-import "time"
+import (
+	"time"
+)
 
 // Config holds configuration values for building a Daffodil
 type Config struct {
