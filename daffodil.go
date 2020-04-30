@@ -11,7 +11,9 @@ const (
 )
 
 // Daffodil is an id generator.
-type Daffodil struct{}
+type Daffodil struct {
+	cfg Config
+}
 
 // ID represents the generated 64-bit UID.
 type ID uint64

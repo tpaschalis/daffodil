@@ -13,7 +13,7 @@ func TestNewDaffodil(t *testing.T) {
 	got, err := NewDaffodil(cfg)
 
 	assert.IsTypef(t, want, got, "Could not initialize Daffodil")
-	assert.IsTypef(t, cfg, got.Config, "Daffodil doesn't contain Config")
+	assert.IsTypef(t, cfg, got.cfg, "Daffodil doesn't contain Config")
 	assert.Nil(t, err)
 }
 
