@@ -1,6 +1,6 @@
 package daffodil
 
-// Define bit lengths of parts consisting
+// Define bit lengths of parts consisting.
 const (
 	Time   = 39
 	Order  = 8
@@ -10,18 +10,18 @@ const (
 
 )
 
-// Daffodil is an id generator
+// Daffodil is an id generator.
 type Daffodil struct{}
 
-// ID represents the generated 64-bit UID
+// ID represents the generated 64-bit UID.
 type ID uint64
 
-// NewDaffodil returns a new instance of an ID generator
+// NewDaffodil returns a new instance of an ID generator.
 func NewDaffodil(cfg Config) (*Daffodil, error) {
 	return &Daffodil{}, nil
 }
 
-// Next generates the next uid
+// Next generates the next uid.
 func (d *Daffodil) Next() ID {
 	return 0
 }
