@@ -1,7 +1,7 @@
 package daffodil
 
 import (
-	"fmt"
+	"errors"
 	"sync"
 	"time"
 )
@@ -14,16 +14,17 @@ const (
 
 	daffodilTimeUnit = 1e7 // == 10 msec
 
-	nodeMask  = (1<<NodeBits - 1)
-	orderMask = (1<<SequenceBits - 1) << NodeBits
-	timeMask  = (1<<TimeBits - 1) << SequenceBits << NodeBits
+	seqMask  = (1<<SequenceBits - 1)
+	nodeMask = (1<<NodeBits - 1) << SequenceBits
+	timeMask = (1<<TimeBits - 1) << NodeBits << SequenceBits
 )
 
 // Daffodil is an id generator.
 type Daffodil struct {
-	cfg     *Config
-	mutex   *sync.Mutex
-	elapsed time.Duration
+	cfg      *Config
+	mutex    *sync.Mutex
+	latest   int64
+	sequence int64
 }
 
 // ID represents the generated 64-bit UID.
@@ -32,18 +33,43 @@ type ID uint64
 // NewDaffodil returns a new instance of an ID generator.
 func NewDaffodil(cfg *Config) (*Daffodil, error) {
 	return &Daffodil{
-		cfg: cfg,
+		cfg:   cfg,
+		mutex: new(sync.Mutex),
 	}, nil
 }
 
 // Next generates the next uid.
-func (d *Daffodil) Next() ID {
-	return 0
+func (d *Daffodil) Next() (ID, error) {
+
+	ticks := d.getTicks()
+	timestamp := ticks
+
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	// Has clock moved backwards or wrapped around?
+	if timestamp < d.latest || ticks < 0 {
+		return 0, errors.New("clock has moved backwards or maybe has wrapped around")
+	}
+
+	if timestamp == d.latest {
+		// Have we run out of space in our sequence in this tick?
+		if d.sequence >= seqMask {
+			return 0, errors.New("sequence overflow, not generating IDs for the rest of the tick")
+		}
+		d.sequence++
+	} else {
+		// we're in a new-er timeslot, reset the sequence and store the next timestamp
+		d.sequence = 0
+		d.latest = timestamp
+	}
+
+	return ID(uint64(timestamp)<<(NodeBits+SequenceBits) |
+		uint64(d.cfg.nodeID)<<SequenceBits |
+		uint64(d.sequence)), nil
 }
 
 func (d *Daffodil) getTicks() int64 {
-	fmt.Println(time.Now())
-	fmt.Println(d.cfg.epoch)
 	return time.Now().UTC().UnixNano()/daffodilTimeUnit -
 		d.cfg.epoch.UTC().UnixNano()/daffodilTimeUnit
 }
