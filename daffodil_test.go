@@ -18,12 +18,14 @@ func TestNewDaffodil(t *testing.T) {
 }
 
 func TestNextMethod(t *testing.T) {
-	want := ID(0)
-	d, err := NewDaffodil(&Config{})
+	cfg, err := NewConfig()
+	require.Nil(t, err)
+	d, err := NewDaffodil(cfg)
 	require.Nil(t, err)
 
 	got := d.Next()
-	assert.IsType(t, want, got, "Next method should return an ID")
+	assert.IsType(t, ID(0), got, "Next method should return an ID")
+	assert.NotEmpty(t, got)
 }
 
 func TestGetTicks(t *testing.T) {
