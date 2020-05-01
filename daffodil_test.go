@@ -2,6 +2,7 @@ package daffodil
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,4 +25,12 @@ func TestNextMethod(t *testing.T) {
 
 	got := d.Next()
 	assert.IsType(t, want, got, "Next method should return an ID")
+}
+
+func TestGetTicks(t *testing.T) {
+	d, err := NewDaffodil(Config{})
+	d.elapsed = time.Now().Sub(d.cfg.epoch)
+
+	got := d.getTicks()
+	assert.NotEmpty(t, got)
 }
