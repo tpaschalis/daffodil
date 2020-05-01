@@ -2,12 +2,15 @@ package daffodil
 
 // Define bit lengths of parts consisting.
 const (
-	Time   = 39
-	Order  = 8
-	NodeID = 63 - Time - Order // 16-bit
+	TimeBits     = 39
+	SequenceBits = 8
+	NodeBits     = 63 - TimeBits - SequenceBits // 16-bit
 
 	daffodilTimeUnit = 1e7 // == 10 msec
 
+	nodeMask  = (1<<NodeBits - 1)
+	orderMask = (1<<SequenceBits - 1) << NodeBits
+	timeMask  = (1<<TimeBits - 1) << SequenceBits << NodeBits
 )
 
 // Daffodil is an id generator.
