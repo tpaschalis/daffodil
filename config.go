@@ -18,7 +18,7 @@ type Config struct {
 func NewConfig() (*Config, error) {
 	return &Config{
 		nodeID: 0,
-		epoch:  time.Now(),
+		epoch:  time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}, nil
 }
 

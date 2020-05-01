@@ -2,7 +2,6 @@ package daffodil
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -11,7 +10,7 @@ import (
 func TestNewDaffodil(t *testing.T) {
 	want := &Daffodil{}
 	cfg := Config{}
-	got, err := NewDaffodil(cfg)
+	got, err := NewDaffodil(&cfg)
 
 	assert.IsTypef(t, want, got, "Could not initialize Daffodil")
 	assert.IsTypef(t, cfg, got.cfg, "Daffodil doesn't contain Config")
@@ -20,7 +19,7 @@ func TestNewDaffodil(t *testing.T) {
 
 func TestNextMethod(t *testing.T) {
 	want := ID(0)
-	d, err := NewDaffodil(Config{})
+	d, err := NewDaffodil(&Config{})
 	require.Nil(t, err)
 
 	got := d.Next()
@@ -28,9 +27,10 @@ func TestNextMethod(t *testing.T) {
 }
 
 func TestGetTicks(t *testing.T) {
-	d, err := NewDaffodil(Config{})
-	d.elapsed = time.Now().Sub(d.cfg.epoch)
-
+	cfg, err := NewConfig()
+	require.Nil(t, err)
+	d, err := NewDaffodil(cfg)
+	require.Nil(t, err)
 	got := d.getTicks()
 	assert.NotEmpty(t, got)
 }

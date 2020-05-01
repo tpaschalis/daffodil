@@ -1,5 +1,11 @@
 package daffodil
 
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
 // Define bit lengths of parts consisting.
 const (
 	TimeBits     = 39
@@ -15,18 +21,29 @@ const (
 
 // Daffodil is an id generator.
 type Daffodil struct {
-	cfg Config
+	cfg     *Config
+	mutex   *sync.Mutex
+	elapsed time.Duration
 }
 
 // ID represents the generated 64-bit UID.
 type ID uint64
 
 // NewDaffodil returns a new instance of an ID generator.
-func NewDaffodil(cfg Config) (*Daffodil, error) {
-	return &Daffodil{}, nil
+func NewDaffodil(cfg *Config) (*Daffodil, error) {
+	return &Daffodil{
+		cfg: cfg,
+	}, nil
 }
 
 // Next generates the next uid.
 func (d *Daffodil) Next() ID {
 	return 0
+}
+
+func (d *Daffodil) getTicks() int64 {
+	fmt.Println(time.Now())
+	fmt.Println(d.cfg.epoch)
+	return time.Now().UTC().UnixNano()/daffodilTimeUnit -
+		d.cfg.epoch.UTC().UnixNano()/daffodilTimeUnit
 }
