@@ -11,8 +11,8 @@ import (
 
 func TestNewDaffodil(t *testing.T) {
 	want := &Daffodil{}
-	cfg := Config{}
-	got, err := NewDaffodil(&cfg)
+	cfg := &Config{}
+	got, err := NewDaffodil(cfg)
 
 	assert.IsTypef(t, want, got, "Could not initialize Daffodil")
 	assert.IsTypef(t, cfg, got.cfg, "Daffodil doesn't contain Config")
@@ -25,7 +25,8 @@ func TestNextMethod(t *testing.T) {
 	d, err := NewDaffodil(cfg)
 	require.Nil(t, err)
 
-	got := d.Next()
+	got, err := d.Next()
+	assert.Nil(t, err)
 	assert.IsType(t, ID(0), got, "Next method should return an ID")
 	assert.NotEmpty(t, got)
 

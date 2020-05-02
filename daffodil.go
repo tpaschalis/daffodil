@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Define bit lengths of parts consisting.
+// Define bit lengths of ID compomnents.
 const (
 	TimeBits     = 39
 	SequenceBits = 8
@@ -52,8 +52,8 @@ func (d *Daffodil) Next() (ID, error) {
 		return 0, errors.New("clock has moved backwards or maybe has wrapped around")
 	}
 
+	// Check if we've run out of sequence bits in this tick, otherwise increment sequence
 	if timestamp == d.latest {
-		// Have we run out of space in our sequence in this tick?
 		if d.sequence >= seqMask {
 			return 0, errors.New("sequence overflow, not generating IDs for the rest of the tick")
 		}
