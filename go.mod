@@ -1,4 +1,4 @@
-module daffodil
+module github.com/tpaschalis/daffodil
 
 go 1.13
 
