@@ -8,11 +8,11 @@ import (
 )
 
 var cfg *daffodil.Config
-var df daffodil.Daffodil
+var df *daffodil.Daffodil
 
 func main() {
-	cfg = daffodil.NewConfig()
-	df = daffodil.NewDaffodil(cfg)
+	cfg, _ = daffodil.NewConfig()
+	df, _ = daffodil.NewDaffodil(cfg)
 
 	http.HandleFunc("/", daffodilHandler)
 	http.ListenAndServe(":8080", nil)
