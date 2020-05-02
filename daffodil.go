@@ -73,3 +73,9 @@ func (d *Daffodil) getTicks() int64 {
 	return time.Now().UTC().UnixNano()/daffodilTimeUnit -
 		d.cfg.epoch.UTC().UnixNano()/daffodilTimeUnit
 }
+
+func (id ID) dismantle() (int64, int64, int64) {
+	return int64(id & timeMask >> NodeBits >> SequenceBits),
+		int64(id & nodeMask >> SequenceBits),
+		int64(id & seqMask)
+}
