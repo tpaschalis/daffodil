@@ -67,3 +67,12 @@ func TestPrintMasks(t *testing.T) {
 	//                                        111111111111111100000000
 	//                                                        11111111
 }
+
+func TestDismantleID(t *testing.T) {
+	id := ID(17801782472864612)
+
+	gotTs, gotNode, gotSeq := id.dismantle()
+	assert.Equal(t, int64(1061068920), gotTs)
+	assert.Equal(t, int64(43507), gotNode)
+	assert.Equal(t, int64(100), gotSeq)
+}
