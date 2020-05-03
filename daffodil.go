@@ -74,7 +74,8 @@ func (d *Daffodil) getTicks() int64 {
 		d.cfg.epoch.UTC().UnixNano()/daffodilTimeUnit
 }
 
-func (id ID) dismantle() (int64, int64, int64) {
+// Dismantle breaks up an ID to its basic compomnents.
+func (id ID) Dismantle() (int64, int64, int64) {
 	return int64(id & timeMask >> NodeBits >> SequenceBits),
 		int64(id & nodeMask >> SequenceBits),
 		int64(id & seqMask)

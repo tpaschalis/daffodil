@@ -71,7 +71,7 @@ func TestPrintMasks(t *testing.T) {
 func TestDismantleID(t *testing.T) {
 	id := ID(17801782472864612)
 
-	gotTs, gotNode, gotSeq := id.dismantle()
+	gotTs, gotNode, gotSeq := id.Dismantle()
 	assert.Equal(t, int64(1061068920), gotTs)
 	assert.Equal(t, int64(43507), gotNode)
 	assert.Equal(t, int64(100), gotSeq)
