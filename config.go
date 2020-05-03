@@ -3,6 +3,7 @@ package daffodil
 import (
 	"errors"
 	"hash/fnv"
+	"log"
 	"net"
 	"os"
 	"time"
@@ -16,8 +17,37 @@ type Config struct {
 
 // NewConfig initializes a Config struct
 func NewConfig() (*Config, error) {
+	var nodeID uint16
+	var err error
+
+	nodeIDMode := os.Getenv("DAFFODIL_NODEID_MODE")
+	switch nodeIDMode {
+	case "HOSTNAME":
+		nodeID, err = nodeIDfromHostname()
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "PRIVATEIP":
+		nodeID, err = nodeIDfromIP()
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "CUSTOM":
+		varname := os.Getenv("DAFFODIL_NODEID_CUSTOM")
+		if varname != "" {
+			nodeID, err = nodeIDfromEnv(varname)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	default:
+		nodeID, err = nodeIDfromIP()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	return &Config{
-		nodeID: stringTo16Bits("foo"),
+		nodeID: nodeID,
 		epoch:  time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}, nil
 }
