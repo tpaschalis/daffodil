@@ -7,6 +7,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-X main.ve
 
 FROM scratch
 COPY --from=builder /go/daffodil/daffodil-exec .
-# COPY --from=builder /go/daffodil/.env.dist .env
-# COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
 CMD ["./daffodil-exec"]
