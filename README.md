@@ -32,7 +32,7 @@ If two IDs are generated within the same tick, the sequence is incremented.
 
 This means that daffodil can generate up to 2^8=256 IDs per tick, per machine, and be deployed in up to 2^16=65536 machines.
 
-Daffodil depends on the system clock to calculate the number of ticks since the epoch. There are some checks in place to ensure the monotonic nature of the clock, but using something like NTP to keep all distributed nodes synchronized will help maintain the order-ability of the generated IDs. 
+Daffodil depends on the system clock to calculate the number of ticks since the epoch. There are some checks in place to ensure the monotonic nature of the clock, but using something like NTP to keep all distributed nodes synchronized will help maintain the order-ability of the generated IDs and lessen the chance of collisions.
 
 ## Benchmarks
 
@@ -51,9 +51,20 @@ if err != nil {
 }
 ```
 
-By default the Node ID is defined by the host's private IP, to avoid conflicts between nodes.   
-Setting `${DAFFODIL_NODEID_MODE}` to `CUSTOM` will read the environment variable stored in `${DAFFODIL_NODEID_CUSTOM}` and translate it into the 16-bit uint NodeID.
-Similarly, setting `${DAFFODIL_NODEID_MODE}` to `HOSTNAME` means the hostname (eg. pod name) will be used as the NodeID.
+Currently, the only configured value is the Node ID, which by default is calculated from the  host's private IP, to avoid conflicts between nodes.   
+
+Setting `${DAFFODIL_NODEID_MODE}` to `HOSTNAME` means the hostname (eg. pod name) will be translated into a 16-but uint NodeID.   
+
+Similarly, setting `${DAFFODIL_NODEID_MODE}` to `CUSTOM` will read the environment variable stored in `${DAFFODIL_NODEID_CUSTOM}` and use it as the Node ID.
+
+After initializing `daffodil`, you can just use the `Next()` method to produce IDs.
+```go
+type ID uint64
+
+func (d *Daffodil) Next() (ID, error)
+```
+
+In cases that the application encounters an error with the clock or the sequence overflows, the method will return an error.
 
 ### Installation
 All you have to do is
@@ -63,14 +74,16 @@ go get github.com/tpaschalis/daffodil
 
 ### Usage
 
-`daffodil` includes a simple stand-alone implementation, which can be `go build`, as well as a [Docker image](https://github.com/tpaschalis/daffodil/blob/master/Dockerfile), and a [Kubernetes deployment](https://github.com/tpaschalis/daffodil/blob/master/deployment.yaml).
+`daffodil` includes a simple standalone implementation, which you can `go build` to deploy a binary, a [Docker image](https://github.com/tpaschalis/daffodil/blob/master/Dockerfile), and a [Kubernetes deployment](https://github.com/tpaschalis/daffodil/blob/master/deployment.yaml).
 
-The standalone application runs on port `:8080` contains two routes; the root url `/` which simply generates an ID and `/dismantle?id=` can be used to disassemble an ID to its components.
+The standalone application runs on port `:8080` and contains two routes;   
+`/` the root url which simply generates an ID and    
+`/dismantle?id=` which is used to disassemble an ID to its components
 ```
 $ cd cmd/daffodil 
 
 $ go run main.go &
-[1] 18938$ 
+[1] 18938 
 
 $ curl "localhost:8080/"
 17908816211997440
