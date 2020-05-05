@@ -29,5 +29,3 @@ spec:
             memory: 32Mi
       dnsPolicy: ClusterFirst
       restartPolicy: Always
-
-
