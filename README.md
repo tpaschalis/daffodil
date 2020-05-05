@@ -36,6 +36,26 @@ Daffodil depends on the system clock to calculate the number of ticks since the 
 
 ## Benchmarks
 
+To get some magnitude perspective of a modern system at scale, as of May 2020, Twitter generates ~10k tweets per second. As we mentioned, daffodil should be able to generate 256 IDs per 10msec *tick* i.e. handle ~25600 rps.
+
+My first attempt was to simply `go run` a single instance on a beefy laptop and measure performance with `httperf` and `ab`. The application was able to sustain bursts of up to 20 k requests per second, until it started replying with non-2xx responses. When trying to pick up the pace, I either run [out of file descriptors](https://stackoverflow.com/questions/29484074/httperf-file-descriptor-limit) or [ephemeral ports](https://stackoverflow.com/questions/1216267/ab-program-freezes-after-lots-of-requests-why), so I figured, let's move to a more realistic testing scenario, in a Kubernetes deployment!
+
+```
+$ ab -n 30000 -c 30 "http://localhost:8080/"
+This is ApacheBench, Version 2.3 <$Revision: 1826891 $>
+...
+Time taken for tests:   1.475 seconds
+Complete requests:      30000
+Failed requests:        3
+...
+Requests per second:    20336.63 [#/sec] (mean)
+Time per request:       1.475 [ms] (mean)
+Time per request:       0.049 [ms] (mean, across all concurrent requests)
+...
+```
+
+**TODO: Add K8S benchmarks**
+
 ## Getting started
 
 First off, we need to initialize a *Config* struct and *Daffodil* itself.
