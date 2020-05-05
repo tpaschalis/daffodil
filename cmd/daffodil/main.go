@@ -37,6 +37,7 @@ func daffodilHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Fprintf(w, "fprint returned error in Write to ResponseWriter : %s", err.Error())
 		}
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
